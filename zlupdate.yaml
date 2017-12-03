@@ -1,0 +1,21 @@
+---
+- hosts: test
+  gather_facts: False
+  vars_files:
+      - file.yaml
+  tasks:
+  - name: copy files
+    copy: src=/tmp/{{ item }} dest=/usr/src/scripts/  owner=dxhy backup=yes
+    with_items: '{{ filelist }}'
+  - name: update files
+    shell: cd /usr/src/scripts/; /usr/bin/python test01.py
+    register: res
+  - name: stop tomcat
+    shell: ps -ef|grep -v 'grep' |grep {{ item }}| awk '{print $2}' |xargs kill -9
+    register: status
+    with_items: "{{ projname }}"
+    when: res.stdout.startswith("ok") 
+  - name: start tomcat
+    action: shell {{ item }}/bin/catalina.sh start &
+    async: 5
+    with_items: "{{ projname }}"

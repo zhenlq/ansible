@@ -1,0 +1,6 @@
+---
+- filelist:
+  - a.txt
+  - b.txt
+- projname:
+  - '/home/dxhy/test-8004-8080-8009'
